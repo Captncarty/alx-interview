@@ -10,6 +10,9 @@ You can assume n will be always an integer
 
 
 def pascal_triangle(n):
+    """
+    return empty list if n <= 0
+    """
     if n <= 0:
         return []
 
