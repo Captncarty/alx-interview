@@ -1,0 +1,1 @@
+Number of locked boxes... Recommended a method that determines the number of locked boxes and if all can be opened!
