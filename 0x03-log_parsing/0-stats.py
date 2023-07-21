@@ -21,49 +21,41 @@ status codes should be printed in ascending order
 import sys
 
 
-def parse_log_line(line):
-    """
-    Read stdin line by line and parses
-    """
-    try:
-        split_line = line.split()
-        status = int(split_line[-2])
-        file_size = int(split_line[-1])
-        return status, file_size
-    except (ValueError, IndexError):
-        return None
+def printStatus(dic, size):
+    """ Prints information """
+    print("File size: {:d}".format(size))
+    for i in sorted(dic.keys()):
+        if dic[i] != 0:
+            print("{}: {:d}".format(i, dic[i]))
 
 
-def compute_metrics(total_files_size, status_code_line):
-    """
-    computes metrics from the log files and passes it to stdout
-    """
-    print("File size:", total_files_size)
-    for status in sorted(status_code_line.keys()):
-        print("{}: {}".format(status, status_code_line[status]))
+statusCodes = {"200": 0, "301": 0, "400": 0, "401": 0, "403": 0,
+               "404": 0, "405": 0, "500": 0}
+
+count = 0
+size = 0
+
+try:
+    for line in sys.stdin:
+        if count != 0 and count % 10 == 0:
+            printStatus(statusCodes, size)
+
+        stlist = line.split()
+        count += 1
+
+        try:
+            size += int(stlist[-1])
+        except Exception:
+            pass
+
+        try:
+            if stlist[-2] in statusCodes:
+                statusCodes[stlist[-2]] += 1
+        except Exception:
+            pass
+    printStatus(statusCodes, size)
 
 
-def main():
-    """
-    runs program for every 10 lines or Ctrl+C and throws an exception
-    """
-    total_files_size = 0
-    status_code_line = {}
-
-    try:
-        count_lines = 0
-        for line in sys.stdin:
-            log_data = parse_log_line(line)
-            if log_data:
-                status, file_size = log_data
-                total_files_size += file_size
-                status_code_line[status] = status_code_line.get(status, 0) + 1
-
-                count_lines += 1
-                if count_lines % 10 == 0:
-                    compute_metrics(total_files_size, status_code_line)
-                    print()
-
-    except KeyboardInterrupt:
-        compute_metrics(total_files_size, status_code_line)
-        raise
+except KeyboardInterrupt:
+    printStatus(statusCodes, size)
+    raise
