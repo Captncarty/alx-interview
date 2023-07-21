@@ -67,7 +67,3 @@ def main():
     except KeyboardInterrupt:
         compute_metrics(total_files_size, status_code_line)
         raise
-
-
-if __name__ == "__main__":
-    main()
