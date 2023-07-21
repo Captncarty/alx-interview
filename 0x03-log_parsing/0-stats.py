@@ -65,9 +65,8 @@ def main():
                     print()
 
     except KeyboardInterrupt:
-        print("\nProgram interrupted by user. Printing final metrics:")
-
-    compute_metrics(total_files_size, status_code_line)
+        compute_metrics(total_files_size, status_code_line)
+        raise
 
 
 if __name__ == "__main__":
