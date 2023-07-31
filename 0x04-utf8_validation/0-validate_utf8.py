@@ -1,30 +1,33 @@
 #!/usr/bin/python3
+"""Module for validUtf8 method"""
+
 
 def validUTF8(data):
-    """Helper function to check if the given number is a valid continuation byte."""
-    def is_continuation(byte):
-        return byte >> 6 == 2
+    """Determines if given data represents valid UTF-8 encoding
+    Args:
+        data: list of integers
+    Returns:
+        True if valid UTF-8 encoding, otherwise False
+    """
 
-    """Iterate through each byte in the data set."""
-    i = 0
-    while i < len(data):
-        byte = data[i]
+    n_bytes = 0
+    mask1 = 1 << 7
+    mask2 = 1 << 6
 
-        """Check for 1-byte character (ASCII character, i.e., 0xxxxxxx)."""
-        if byte >> 7 == 0:
-            i += 1
-            """Check for 2-byte character (110xxxxx 10xxxxxx)."""
-        elif byte >> 5 == 6 and i + 1 < len(data) and is_continuation(data[i + 1]):
-            i += 2
-            """Check for 3-byte character (1110xxxx 10xxxxxx 10xxxxxx)."""
-        elif byte >> 4 == 14 and i + 2 < len(data) and is_continuation(data[i + 1]) and is_continuation(data[i + 2]):
-            i += 3
-            """Check for 4-byte character (11110xxx 10xxxxxx 10xxxxxx 10xxxxxx)."""
-        elif byte >> 3 == 30 and i + 3 < len(data) and is_continuation(data[i + 1]) and is_continuation(data[i + 2]) and is_continuation(data[i + 3]):
-            i += 4
+    for num in data:
+        mask = 1 << 7
+        if n_bytes == 0:
+            while mask & num:
+                n_bytes += 1
+                mask = mask >> 1
+
+            if n_bytes == 0:
+                continue
+
+            if n_bytes == 1 or n_bytes > 4:
+                return False
         else:
-            """If the byte does not match any of the UTF-8 encoding patterns, return False."""
-            return False
-
-    """If all bytes are successfully validated, return True."""
-    return True
+            if not (num & mask1 and not (num & mask2)):
+                return False
+        n_bytes -= 1
+    return n_bytes == 0
