@@ -37,8 +37,10 @@ def isWinner(x, nums):
     add_prime(max(nums), prime_num)
 
     for round in range(x):
-        new_sum = sum((i != 0 and i <= nums[round])
-                    for i in prime_num[:nums[round] + 1])
+        new_sum = 0
+        for i in prime_num[:nums[round] + 1]:
+            if i != 0 and i <= nums[round]:
+                new_sum += 1
         if (new_sum % 2):
             winner = "Maria"
         else:
