@@ -8,51 +8,47 @@ Assume n and x will not be larger than 10000,
 """
 
 
+def check_prime(n):
+    """ Check if n is a prime number """
+    for i in range(2, int(n ** 0.5) + 1):
+        if not n % i:
+            return False
+    return True
+
+
+def add_prime(n, prime_num):
+    """ Add prime number to list """
+    last_prime = prime_num[-1]
+    if n > last_prime:
+        for i in range(last_prime + 1, n + 1):
+            if check_prime(i):
+                prime_num.append(i)
+            else:
+                prime_num.append(0)
+
+
 def isWinner(x, nums):
-    """ x is num of rounds
-    nums is an array of n
+    """ x is the number of rounds and nums is an array of n
+    Return: name of the player that won the most rounds
     """
-    def is_prime(num):
-        """ check if num is a prime num
-        """
-        if num <= 1:
-            return False
-        for i in range(2, int(num ** 0.5) + 1):
-            if num % i == 0:
-                return False
-            return True
 
-    def win(n):
-        """ determine winner
-        """
-        if n <= 1:
-            return False
-        if n in rounds:
-            return rounds[n]
+    score = {"Maria": 0, "Ben": 0}
+    prime_num = [0, 0, 2]
+    add_prime(max(nums), prime_num)
 
-        for i in range(2, n + 1):
-            if is_prime(i):
-                if not win(n - 1):
-                    rounds[n] = True
-                    return True
-        rounds[n] = False
-        return False
-
-    winner = []
-
-    for n in nums:
-        rounds = {}
-        if win(n):
-            winner.append("Maria")
+    for round in range(x):
+        new_sum = sum((i != 0 and i <= nums[round])
+                for i in prime_num[:nums[round] + 1])
+        if (new_sum % 2):
+            winner = "Maria"
         else:
-            winner.append("Ben")
+            winner = "Ben"
+        if winner:
+            score[winner] += 1
 
-    maria_wins = winner.count("Maria")
-    ben_wins = winner.count("Ben")
-
-    if maria_wins > ben_wins:
+    if score["Maria"] > score["Ben"]:
         return "Maria"
-    elif maria_wins < ben_wins:
+    elif score["Ben"] > score["Maria"]:
         return "Ben"
-    else:
-        return None
+
+    return None
